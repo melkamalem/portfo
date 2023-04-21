@@ -1,0 +1,32 @@
+import boto3
+import json
+
+ses = boto3.client('ses')
+
+def lambda_handler(event, context):
+    print(event)
+    body = json.loads(event['body'])
+
+    name = body['name']
+    email = body['email']
+    message = body['message']
+
+    # Construct the email message body
+    message_body = f"Name: {name}\nEmail: {email}\nMessage: {message}"
+
+    # Send the email
+    response = ses.send_email(
+        Source='malemay20@gmail.com',
+        Destination={
+            'ToAddresses': ['malemay20@gmail.com'],
+        },
+        Message={
+            'Subject': {'Data': 'New contact form submission'},
+            'Body': {'Text': {'Data': message_body}},
+        },
+    )
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Email sent!'),
+    }
